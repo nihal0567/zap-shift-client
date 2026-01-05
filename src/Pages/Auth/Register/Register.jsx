@@ -2,16 +2,32 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import useAuth from '../../../hooks/useAuth';
 import { Link } from 'react-router';
+import axios from 'axios';
 
 const Register = () => {
     const {register, handleSubmit, formState: {errors}} = useForm()
-    const {registerUser, } = useAuth()
+    const {registerUser, updateUserProfile} = useAuth()
 
     const handleRegister=(data)=>{
         console.log(data);
+        const profileImg = data.photo[0]
         registerUser(data.email, data.password)
         .then(result=>{
             console.log(result.user);
+            const formData = new FormData();
+            formData.append('image', profileImg)
+            const imgApiUrl = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_Img_Api_KEY}`
+            axios.post(imgApiUrl, formData)
+            .then( res =>{
+                console.log('after img up', res.data.data.url);
+                const userProfile= {
+                    displayName: data.name,
+                    photoURL: res.data.data.url
+                } 
+                updateUserProfile(userProfile)
+                .then(()=>{console.log('update profile done');})
+                .catch(err=>{console.log(err);})
+            })
         }) .catch(err=>{
             console.log(err);
         })
