@@ -12,10 +12,18 @@ const Navbar = () => {
         .catch()
     }
     const links = <>
-        <li><NavLink to="">Services</NavLink></li>
-        <li><NavLink to="">About Us</NavLink></li>
+        <li><NavLink to="/">Home</NavLink></li>
+        <li><NavLink to="/about-us">About Us</NavLink></li>
+        <li><NavLink to="/send-parcel">Send-Parcel</NavLink></li>
+        <li><NavLink to="/rider">Be a Rider</NavLink></li>
         <li><NavLink to="/coverage">Coverage</NavLink></li>
+        {
+            user && <>
+            <li><NavLink to="/dashboard">Dashboard</NavLink></li>
+            </>
+        }
     </>
+    
     return (
         <div className="navbar bg-base-100 shadow-sm">
             <div className="navbar-start">
@@ -40,7 +48,7 @@ const Navbar = () => {
                 {
                     user ? <a onClick={signOut} className="btn">Log Out</a> : <Link className='btn' to="/login">Login</Link>
                 }
-                <Link className='btn btn-primary' to="/beARider">be a Rider</Link>
+                <Link className='btn btn-primary' to="/rider">be a Rider</Link>
             </div>
         </div>
     );

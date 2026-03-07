@@ -1,32 +1,54 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import useAuth from '../../../hooks/useAuth';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import axios from 'axios';
+import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import SocialIcon from '../../Shared/Social/SocialIcon';
 
 const Register = () => {
     const {register, handleSubmit, formState: {errors}} = useForm()
     const {registerUser, updateUserProfile} = useAuth()
+    const navigate = useNavigate()
+    const axiosSecure = useAxiosSecure()
 
     const handleRegister=(data)=>{
-        console.log(data);
+
         const profileImg = data.photo[0]
         registerUser(data.email, data.password)
-        .then(result=>{
-            console.log(result.user);
+        .then(()=>{
             const formData = new FormData();
             formData.append('image', profileImg)
             const imgApiUrl = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_Img_Api_KEY}`
             axios.post(imgApiUrl, formData)
             .then( res =>{
-                console.log('after img up', res.data.data.url);
+                const photoURL = res.data.data.url;
+
+                //create user in the database
+                const userInfo = {
+                    email: data.email,
+                    displayName: data.name,
+                    photoURL: photoURL,
+                }
+                axiosSecure.post('/users', userInfo)
+                .then(res =>{
+                    if (res.data.insertedId) {
+                        console.log('user created in DB');
+                    }
+                }) 
+
                 const userProfile= {
                     displayName: data.name,
-                    photoURL: res.data.data.url
+                    photoURL: photoURL
                 } 
                 updateUserProfile(userProfile)
-                .then(()=>{console.log('update profile done');})
-                .catch(err=>{console.log(err);})
+                .then(()=>{
+                    console.log('update profile done');
+                    navigate('/')
+                })
+                .catch(err=>{
+                    console.log(err);
+                })
             })
         }) .catch(err=>{
             console.log(err);
@@ -64,6 +86,7 @@ const Register = () => {
                             <div><Link to="/login" className="link link-hover text-red-400">have an account</Link></div>
                             <button className="btn btn-neutral mt-4">Register</button>
                         </fieldset>
+                        <SocialIcon></SocialIcon>
                     </div>
                 </div>
             </form>
