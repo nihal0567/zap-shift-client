@@ -6,6 +6,7 @@ import { MdOutlineEditNote } from "react-icons/md";
 import { FaTrashCan } from "react-icons/fa6";
 import { MdGridView } from "react-icons/md";
 import Swal from 'sweetalert2';
+import { Link } from 'react-router';
 
 const MyParcel = () => {
     const { user } = useAuth()
@@ -23,7 +24,8 @@ const MyParcel = () => {
             cost: parcel.cost,
             parcelId: parcel._id,
             senderEmail: parcel.senderEmail,
-            parcelName: parcel.parcelName
+            parcelName: parcel.parcelName,
+            trackingId: parcel.trackingId
         }
         const res =await axiosSecure.post('/payment-checkout-session', paymentInfo)
         console.log(res.data.url);
@@ -80,7 +82,9 @@ const MyParcel = () => {
                                 <th>{ind + 1}</th>
                                 <td>{parcel.parcelName}</td>
                                 <td>$ {parcel.cost}</td>
-                                <td>{parcel.trackingId}</td>
+                                <td>
+                                    <Link to={`/parcel-track/${parcel.trackingId}`}>{parcel.trackingId}</Link>
+                                </td>
                                 <td>
                                     {
                                         parcel.paymentStatus ?
