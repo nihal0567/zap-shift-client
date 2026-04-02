@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "prod": "front-back-fd40f",
+    "default": "front-back-fd40f"
+  },
+  "targets": {},
+  "etags": {}
+}
